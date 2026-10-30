@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { exportVideo, isExportSupported, getExportFormat, type ExportStatus } from '../videoExporter';
 
 // ============ AUDIO ENGINE ============
 class AudioEngine {
@@ -665,9 +666,16 @@ export default function VideoPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [hasStarted, setHasStarted] = useState(false);
+  const [exportStatus, setExportStatus] = useState<ExportStatus | null>(null);
   const animRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
   const totalDuration = 60;
+
+  const handleExport = useCallback(async () => {
+    if (exportStatus?.state === 'rendering' || exportStatus?.state === 'encoding') return;
+    setExportStatus({ state: 'rendering', progress: 0, message: 'Запуск...', format: getExportFormat() });
+    await exportVideo((status) => setExportStatus(status));
+  }, [exportStatus]);
 
   const getCurrentScene = useCallback(() => {
     return scenes.find(s => currentTime >= s.start && currentTime < s.end) || scenes[scenes.length - 1];
@@ -782,6 +790,16 @@ export default function VideoPlayer() {
           </div>
           <p className="text-[#00FFD5]/50 text-xs mt-4 font-montserrat animate-pulse">НАЖМИ ДЛЯ ЗАПУСКА</p>
 
+          {/* Export button on start screen */}
+          {isExportSupported() && (
+            <button
+              onClick={(e) => { e.stopPropagation(); handleExport(); }}
+              className="mt-6 px-6 py-3 bg-gradient-to-r from-[#FFD700]/20 to-[#00FFD5]/20 border border-[#FFD700]/50 rounded-lg font-orbitron text-xs text-[#FFD700] hover:bg-[#FFD700]/10 transition-all duration-300"
+            >
+              ⬇ СКАЧАТЬ {getExportFormat().toUpperCase()}
+            </button>
+          )}
+
           {/* Decorative corners */}
           <div className="absolute top-4 left-4 w-12 h-12 border-l border-t border-[#00FFD5]/20" />
           <div className="absolute top-4 right-4 w-12 h-12 border-r border-t border-[#FFD700]/20" />
@@ -882,6 +900,53 @@ export default function VideoPlayer() {
             <div className="w-1 h-2 bg-[#00FFD5]/50 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
           </div>
         </div>
+
+        {/* Export button */}
+        {isExportSupported() && (
+          <div className="mt-3 flex items-center justify-center">
+            {exportStatus && (exportStatus.state === 'rendering' || exportStatus.state === 'encoding') ? (
+              <div className="w-full">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-orbitron text-[10px] text-[#FFD700]">{exportStatus.message}</span>
+                  <span className="font-orbitron text-[10px] text-[#00FFD5]">{exportStatus.progress}%</span>
+                </div>
+                <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#00FFD5] to-[#FFD700] rounded-full transition-all duration-300"
+                    style={{ width: `${exportStatus.progress}%` }}
+                  />
+                </div>
+              </div>
+            ) : exportStatus?.state === 'done' ? (
+              <div className="flex items-center gap-2">
+                <span className="font-orbitron text-[10px] text-[#00FFD5]">✓ СКАЧАНО</span>
+                <button
+                  onClick={handleExport}
+                  className="px-3 py-1 text-[10px] font-orbitron border border-[#00FFD5]/30 rounded text-[#00FFD5] hover:bg-[#00FFD5]/10 transition-colors"
+                >
+                  ЕЩЁ РАЗ
+                </button>
+              </div>
+            ) : exportStatus?.state === 'error' ? (
+              <div className="text-center">
+                <span className="font-orbitron text-[10px] text-red-400">{exportStatus.message}</span>
+                <button
+                  onClick={handleExport}
+                  className="ml-2 px-3 py-1 text-[10px] font-orbitron border border-red-400/30 rounded text-red-400 hover:bg-red-400/10 transition-colors"
+                >
+                  ПОВТОРИТЬ
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleExport}
+                className="px-4 py-2 bg-gradient-to-r from-[#FFD700]/20 to-[#00FFD5]/20 border border-[#FFD700]/50 rounded-lg font-orbitron text-[10px] text-[#FFD700] hover:bg-[#FFD700]/10 transition-all duration-300"
+              >
+                ⬇ СКАЧАТЬ {getExportFormat().toUpperCase()} (1080×1920)
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
