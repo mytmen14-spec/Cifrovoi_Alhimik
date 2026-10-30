@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { exportVideo, isExportSupported, type ExportStatus } from '../videoExporter';
+import { exportVideo, isExportSupported, downloadFromUrl, downloadBlob, type ExportStatus } from '../videoExporter';
 
 // ============ AUDIO ENGINE ============
 class AudioEngine {
@@ -822,7 +822,60 @@ export default function VideoPlayer() {
           <p className="text-[#00FFD5]/50 text-xs mt-4 font-montserrat animate-pulse">НАЖМИ ДЛЯ ЗАПУСКА</p>
 
           {/* Export button on start screen */}
-          {isExportSupported() ? (
+          {exportStatus?.state === 'done' && (exportStatus.blob || exportStatus.blobUrl) ? (
+            <div className="mt-6 space-y-2 w-full max-w-xs px-4">
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  if (exportStatus.blob) {
+                    downloadBlob(exportStatus.blob);
+                  } else if (exportStatus.blobUrl) {
+                    downloadFromUrl(exportStatus.blobUrl);
+                  }
+                }}
+                className="w-full px-6 py-3 bg-gradient-to-r from-[#FFD700]/30 to-[#00FFD5]/30 border border-[#FFD700]/60 rounded-lg font-orbitron text-xs text-[#FFD700] hover:bg-[#FFD700]/20 transition-all duration-300"
+              >
+                ⬇ СКАЧАТЬ ФАЙЛ
+              </button>
+              {exportStatus.blobUrl && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); window.open(exportStatus.blobUrl!, '_blank'); }}
+                  className="w-full px-4 py-2 border border-[#00FFD5]/30 rounded-lg font-orbitron text-[10px] text-[#00FFD5]/70 hover:bg-[#00FFD5]/10 transition-colors"
+                >
+                  ↗ ОТКРЫТЬ В НОВОЙ ВКЛАДКЕ
+                </button>
+              )}
+              <p className="text-[8px] text-gray-500 text-center font-montserrat">
+                Не скачивается? Откройте в новой вкладке → ПКМ → Сохранить
+              </p>
+            </div>
+          ) : exportStatus?.state === 'rendering' || exportStatus?.state === 'encoding' ? (
+            <div className="mt-6 w-full max-w-xs px-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-orbitron text-[10px] text-[#FFD700]">{exportStatus.message}</span>
+                <span className="font-orbitron text-[10px] text-[#00FFD5]">{exportStatus.progress}%</span>
+              </div>
+              <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#00FFD5] to-[#FFD700] rounded-full transition-all duration-300 animate-pulse"
+                  style={{ width: `${exportStatus.progress}%` }}
+                />
+              </div>
+              <p className="text-[8px] text-gray-500 mt-1 text-center font-montserrat">
+                Не закрывайте вкладку
+              </p>
+            </div>
+          ) : exportStatus?.state === 'error' ? (
+            <div className="mt-6 text-center px-4">
+              <p className="text-red-400 text-[10px] font-orbitron mb-2">{exportStatus.message}</p>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleExport(); }}
+                className="px-4 py-2 border border-red-400/30 rounded-lg font-orbitron text-[10px] text-red-400 hover:bg-red-400/10 transition-colors"
+              >
+                ПОВТОРИТЬ
+              </button>
+            </div>
+          ) : isExportSupported() ? (
             <button
               onClick={(e) => { e.stopPropagation(); handleExport(); }}
               className="mt-6 px-6 py-3 bg-gradient-to-r from-[#FFD700]/20 to-[#00FFD5]/20 border border-[#FFD700]/50 rounded-lg font-orbitron text-xs text-[#FFD700] hover:bg-[#FFD700]/10 transition-all duration-300"
@@ -956,13 +1009,42 @@ export default function VideoPlayer() {
                 </p>
               </div>
             ) : exportStatus?.state === 'done' ? (
-              <div className="flex items-center gap-2">
-                <span className="font-orbitron text-[10px] text-[#00FFD5]">✓ СКАЧАНО</span>
+              <div className="w-full space-y-2">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="font-orbitron text-[10px] text-[#00FFD5]">✓ ГОТОВО</span>
+                </div>
+                {(exportStatus.blob || exportStatus.blobUrl) && (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        if (exportStatus.blob) {
+                          downloadBlob(exportStatus.blob);
+                        } else if (exportStatus.blobUrl) {
+                          downloadFromUrl(exportStatus.blobUrl);
+                        }
+                      }}
+                      className="w-full px-4 py-2 bg-gradient-to-r from-[#FFD700]/30 to-[#00FFD5]/30 border border-[#FFD700]/60 rounded-lg font-orbitron text-[10px] text-[#FFD700] hover:bg-[#FFD700]/20 transition-all duration-300"
+                    >
+                      ⬇ СКАЧАТЬ ФАЙЛ
+                    </button>
+                    {exportStatus.blobUrl && (
+                      <button
+                        onClick={() => window.open(exportStatus.blobUrl!, '_blank')}
+                        className="w-full px-3 py-1.5 border border-[#00FFD5]/30 rounded-lg font-orbitron text-[9px] text-[#00FFD5]/70 hover:bg-[#00FFD5]/10 transition-colors"
+                      >
+                        ↗ ОТКРЫТЬ В НОВОЙ ВКЛАДКЕ
+                      </button>
+                    )}
+                    <p className="text-[8px] text-gray-500 text-center font-montserrat">
+                      Если не скачивается — откройте в новой вкладке и сохраните через ПКМ
+                    </p>
+                  </div>
+                )}
                 <button
                   onClick={handleExport}
-                  className="px-3 py-1 text-[10px] font-orbitron border border-[#00FFD5]/30 rounded text-[#00FFD5] hover:bg-[#00FFD5]/10 transition-colors"
+                  className="w-full px-3 py-1 text-[10px] font-orbitron border border-[#00FFD5]/30 rounded text-[#00FFD5] hover:bg-[#00FFD5]/10 transition-colors"
                 >
-                  ЕЩЁ РАЗ
+                  🔄 СОЗДАТЬ ЗАНОВО
                 </button>
               </div>
             ) : exportStatus?.state === 'error' ? (
