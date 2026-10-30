@@ -804,10 +804,10 @@ export default function VideoPlayer() {
         <div className="text-center">
           <p className="font-montserrat font-bold text-lg md:text-xl text-white inline-block px-4 py-2 bg-[#0A0A0A]/70 rounded-lg backdrop-blur-sm">
             {scene.subtitle.split(' ').map((word, i) => (
-              <span key={i} className={`inline-block mx-1 transition-all duration-300 ${
+              <span key={i} className={`inline-block mx-2 transition-all duration-300 ${
                 sceneProgress > i * 0.15 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               } ${['ДРЕВНЯЯ', 'МУДРОСТЬ', 'ФИНАНСОВЫЙ', 'КОД', 'ТРАНСФОРМАЦИЯ', 'АСТРАЛЬНО', 'СУДЬБЫ', 'ВСЕЛЕННУЮ'].includes(word) ? 'text-[#FFD700]' : 'text-white'}`}>
-                {word}
+                {word}{' '}
               </span>
             ))}
           </p>
