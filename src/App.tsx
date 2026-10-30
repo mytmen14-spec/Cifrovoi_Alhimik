@@ -60,7 +60,7 @@ function App() {
             <span className="text-[#FFD700]">ИНТРО</span>
           </h2>
           <p className="text-center text-gray-400 font-montserrat text-sm mb-8">
-            60 секунд • 8 сцен • Звуковые эффекты • Скачивание в MP4
+            60 секунд • 8 сцен • Звуковые эффекты • Скачивание в WEBM
           </p>
           <VideoPlayer />
           <div className="mt-6 grid grid-cols-4 gap-2">

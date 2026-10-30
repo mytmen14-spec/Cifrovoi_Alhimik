@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { exportVideo, isExportSupported, getExportFormat, type ExportStatus } from '../videoExporter';
+import { exportVideo, isExportSupported, type ExportStatus } from '../videoExporter';
 
 // ============ AUDIO ENGINE ============
 class AudioEngine {
@@ -672,9 +672,40 @@ export default function VideoPlayer() {
   const totalDuration = 60;
 
   const handleExport = useCallback(async () => {
-    if (exportStatus?.state === 'rendering' || exportStatus?.state === 'encoding') return;
-    setExportStatus({ state: 'rendering', progress: 0, message: 'Запуск...', format: getExportFormat() });
-    await exportVideo((status) => setExportStatus(status));
+    if (exportStatus?.state === 'rendering' || exportStatus?.state === 'encoding') {
+      console.log('Export already in progress');
+      return;
+    }
+    
+    // Check support
+    if (!isExportSupported()) {
+      alert('Ваш браузер не поддерживает экспорт видео. Попробуйте Chrome, Edge или Firefox.');
+      return;
+    }
+    
+    console.log('🎬 Starting video export...');
+    console.log('📊 Browser support:', {
+      MediaRecorder: typeof MediaRecorder !== 'undefined',
+      captureStream: typeof HTMLCanvasElement.prototype.captureStream === 'function',
+    });
+    
+    setExportStatus({ state: 'rendering', progress: 0, message: 'Запуск...', format: 'webm' });
+    
+    try {
+      await exportVideo((status) => {
+        console.log('📹 Export progress:', status.state, status.progress + '%', status.message);
+        setExportStatus(status);
+      });
+      console.log('✅ Export completed successfully!');
+    } catch (err) {
+      console.error('❌ Export failed:', err);
+      setExportStatus({ 
+        state: 'error', 
+        progress: 0, 
+        message: `Ошибка: ${err instanceof Error ? err.message : 'Неизвестная ошибка'}`, 
+        format: 'webm' 
+      });
+    }
   }, [exportStatus]);
 
   const getCurrentScene = useCallback(() => {
@@ -791,13 +822,17 @@ export default function VideoPlayer() {
           <p className="text-[#00FFD5]/50 text-xs mt-4 font-montserrat animate-pulse">НАЖМИ ДЛЯ ЗАПУСКА</p>
 
           {/* Export button on start screen */}
-          {isExportSupported() && (
+          {isExportSupported() ? (
             <button
               onClick={(e) => { e.stopPropagation(); handleExport(); }}
               className="mt-6 px-6 py-3 bg-gradient-to-r from-[#FFD700]/20 to-[#00FFD5]/20 border border-[#FFD700]/50 rounded-lg font-orbitron text-xs text-[#FFD700] hover:bg-[#FFD700]/10 transition-all duration-300"
             >
-              ⬇ СКАЧАТЬ {getExportFormat().toUpperCase()}
+              ⬇ СКАЧАТЬ WEBM
             </button>
+          ) : (
+            <p className="mt-6 px-6 py-3 text-gray-500 text-xs font-montserrat text-center">
+              Экспорт не поддерживается в вашем браузере
+            </p>
           )}
 
           {/* Decorative corners */}
@@ -912,10 +947,13 @@ export default function VideoPlayer() {
                 </div>
                 <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#00FFD5] to-[#FFD700] rounded-full transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-[#00FFD5] to-[#FFD700] rounded-full transition-all duration-300 animate-pulse"
                     style={{ width: `${exportStatus.progress}%` }}
                   />
                 </div>
+                <p className="text-[8px] text-gray-500 mt-1 text-center font-montserrat">
+                  Не закрывайте вкладку • Откройте консоль (F12) для подробностей
+                </p>
               </div>
             ) : exportStatus?.state === 'done' ? (
               <div className="flex items-center gap-2">
@@ -942,7 +980,7 @@ export default function VideoPlayer() {
                 onClick={handleExport}
                 className="px-4 py-2 bg-gradient-to-r from-[#FFD700]/20 to-[#00FFD5]/20 border border-[#FFD700]/50 rounded-lg font-orbitron text-[10px] text-[#FFD700] hover:bg-[#FFD700]/10 transition-all duration-300"
               >
-                ⬇ СКАЧАТЬ {getExportFormat().toUpperCase()} (1080×1920)
+                ⬇ СКАЧАТЬ WEBM (1080×1920)
               </button>
             )}
           </div>
