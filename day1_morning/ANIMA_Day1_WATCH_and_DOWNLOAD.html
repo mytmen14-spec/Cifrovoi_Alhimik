@@ -20,4 +20,12 @@ const blob=toBlob(document.getElementById('b64').textContent);
 const url=URL.createObjectURL(blob);
 document.getElementById('v').src=url;
 document.getElementById('dl').href=url;
-</script></body></html>
+</script>
+<div style="max-width:640px;margin:24px auto 0;background:rgba(26,15,48,.7);border:1px solid rgba(212,165,116,.3);border-radius:16px;padding:18px 22px;font-family:Segoe UI,system-ui,sans-serif;color:#e8e2f0">
+<b style="color:#D4A574;letter-spacing:2px">📂 КАК ПОЛУЧИТЬ ЭТОТ ФАЙЛ ИЗ WORKSPACE</b>
+<ol style="margin:10px 0 0 18px;line-height:1.9;font-size:14px">
+<li><b>IDE среды</b> (OpenHands/Cursor/VS Code): панель Files → папка <code style="background:#2D1B4E;padding:2px 6px;border-radius:6px">workspace → day1_morning</code> → правый клик по файлу → Download.</li>
+<li><b>Правый клик по ссылке</b> (если интерфейс их показывает): <code>day1_morning/ANIMA_WORKSPACE_full.zip</code> — весь проект одним архивом.</li>
+<li><b>Сервер</b> (если порт 8000 проброшен): http://localhost:8000/ANIMA_WORKSPACE_full.zip</li>
+<li><b>Git</b>: все файлы закоммичены — репозиторий можно склонировать или выгрузить целиком.</li>
+</ol></div></body></html>

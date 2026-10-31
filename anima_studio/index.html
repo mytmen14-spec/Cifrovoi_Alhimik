@@ -116,7 +116,11 @@ footer{position:relative;z-index:2;text-align:center;padding:20px;color:var(--mu
       <button class="btn" id="btnMute">🔊 Звук вкл.</button>
       <button class="btn" id="btnRestart">⟲ Сначала</button>
     </div>
-    <div class="dl">Скачать мастер (1080×1920): <a href="/anima_day1_morning.mp4" download>anima_day1_morning.mp4</a></div>
+    <div class="dl" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+<button id="dlMp4" class="btn">⬇ Видео 1080×1920 MP4</button>
+<a class="btn" href="/ANIMA_Day1_WATCH_and_DOWNLOAD.html">⬇ HTML «смотреть+скачать»</a>
+<a class="btn" href="/ANIMA_Day1_production_bundle.zip" download>📦 Весь пакет (ZIP)</a>
+<a class="btn" href="/ANIMA_WORKSPACE_full.zip" download>🗂️ ВЕСЬ WORKSPACE (ZIP, 59 МБ)</a></div>
   </div>
 
   <!-- Панель -->
@@ -211,5 +215,10 @@ vid.ontimeupdate=()=>{ if(!vid.duration)return;
  chapters.forEach((ch,i)=>{if(cur>=ch.t)act=i;});
  document.querySelectorAll('.chap[data-i]').forEach(el=>el.classList.toggle('active',+el.dataset.i===act));};
 </script>
-</body>
+<script>
+document.getElementById('dlMp4').onclick=async()=>{
+  const r=await fetch('/anima_day1_morning.mp4'); if(!r.ok){alert('Файл не найден на сервере'); return;}
+  const b=await r.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='anima_day1_morning.mp4'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};</script></body>
 </html>
