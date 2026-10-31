@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANIMA Studio — День 1 · Утро</title>
+<style>
+:root{
+  --purple:#2D1B4E; --purple-deep:#1a0f30; --emerald:#1F4E3D;
+  --gold:#D4A574; --gold-bright:#f0c98a; --fog:#4A6FA5;
+  --text:#e8e2f0; --muted:#9b8fb5;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  background:radial-gradient(ellipse at 20% 10%, #3a2560 0%, var(--purple-deep) 55%, #0d0718 100%);
+  color:var(--text); min-height:100vh; overflow-x:hidden;
+}
+/* ── светлячки ── */
+.firefly{position:fixed;border-radius:50%;background:var(--gold-bright);pointer-events:none;
+  box-shadow:0 0 8px 2px rgba(240,201,138,.6);animation:float linear infinite;z-index:0;opacity:.5}
+@keyframes float{
+  0%{transform:translateY(105vh) translateX(0);opacity:0}
+  10%{opacity:.6} 90%{opacity:.5}
+  100%{transform:translateY(-10vh) translateX(60px);opacity:0}
+}
+header{position:relative;z-index:2;text-align:center;padding:34px 20px 10px}
+.logo{font-size:13px;letter-spacing:6px;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+h1{font-size:clamp(24px,4vw,40px);font-weight:800;
+  background:linear-gradient(120deg,var(--gold-bright),#fff,var(--gold));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{color:var(--muted);margin-top:8px;font-size:15px}
+main{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:34px;justify-content:center;
+  align-items:flex-start;padding:30px 20px 60px;max-width:1280px;margin:0 auto}
+/* ── телефон с видео ── */
+.phone-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
+.phone{width:min(340px,88vw);aspect-ratio:9/19;border-radius:44px;padding:12px;
+  background:linear-gradient(160deg,#3b3b46,#15151b);
+  box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 0 1px rgba(212,165,116,.25),inset 0 1px 2px rgba(255,255,255,.15)}
+.screen{position:relative;width:100%;height:100%;border-radius:34px;overflow:hidden;background:#000}
+.screen video{width:100%;height:100%;object-fit:cover;display:block}
+.notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:90px;height:22px;
+  background:#15151b;border-radius:12px;z-index:5}
+.play-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(13,7,24,.45);backdrop-filter:blur(2px);cursor:pointer;transition:opacity .4s;z-index:4}
+.play-overlay.hidden{opacity:0;pointer-events:none}
+.play-btn{width:84px;height:84px;border-radius:50%;background:rgba(212,165,116,.92);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(212,165,116,.7);
+  transition:transform .2s}
+.play-overlay:hover .play-btn{transform:scale(1.08)}
+.play-btn::after{content:'';border-left:26px solid var(--purple-deep);
+  border-top:16px solid transparent;border-bottom:16px solid transparent;margin-left:6px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.btn{padding:10px 18px;border-radius:24px;border:1px solid rgba(212,165,116,.4);
+  background:rgba(45,27,78,.6);color:var(--text);font-size:14px;cursor:pointer;transition:all .2s}
+.btn:hover{background:var(--gold);color:var(--purple-deep);border-color:var(--gold);
+  box-shadow:0 0 18px rgba(212,165,116,.5)}
+.btn.primary{background:var(--gold);color:var(--purple-deep);font-weight:700}
+.dl{font-size:13px;color:var(--muted);text-align:center}
+.dl a{color:var(--gold);text-decoration:none;border-bottom:1px dotted var(--gold)}
+/* ── инфо-панель ── */
+.panel{flex:1;min-width:300px;max-width:560px;display:flex;flex-direction:column;gap:18px}
+.card{background:rgba(26,15,48,.72);border:1px solid rgba(212,165,116,.22);border-radius:18px;
+  padding:20px 22px;backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.card h2{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.meta{background:rgba(74,111,165,.14);border-radius:12px;padding:10px 12px}
+.meta b{display:block;font-size:17px;color:var(--gold-bright)}
+.meta span{font-size:12px;color:var(--muted)}
+blockquote{border-left:3px solid var(--gold);padding:6px 0 6px 14px;font-style:italic;color:#cfc4e2;font-size:15px;line-height:1.55}
+/* timeline */
+.tl-track{position:relative;height:34px;border-radius:10px;overflow:hidden;cursor:pointer;
+  background:linear-gradient(90deg,#4a3a6e 0 6.25%,#5e3f8f 6.25% 52%,#2e6b57 52% 94%,#4a3a6e 94% 100%);
+  border:1px solid rgba(212,165,116,.3)}
+.tl-head{position:absolute;top:0;bottom:0;width:3px;background:var(--gold-bright);
+  box-shadow:0 0 10px var(--gold-bright);left:0;transition:left .1s linear}
+.tl-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+.chapters{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.chap{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;cursor:pointer;
+  background:rgba(74,111,165,.1);border:1px solid transparent;transition:all .2s;font-size:13.5px}
+.chap:hover{border-color:rgba(212,165,116,.4);background:rgba(74,111,165,.22)}
+.chap.active{border-color:var(--gold);background:rgba(212,165,116,.14)}
+.chap .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.chap .t{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px}
+.sfx-list{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:12px;padding:5px 11px;border-radius:14px;background:rgba(31,78,61,.5);
+  border:1px solid rgba(212,165,116,.25);color:#cfe3d8}
+footer{position:relative;z-index:2;text-align:center;padding:20px;color:var(--muted);font-size:12.5px;letter-spacing:1px}
+.loop-badge{display:inline-block;margin-top:6px;padding:4px 14px;border-radius:14px;
+  border:1px dashed var(--gold);color:var(--gold);font-size:12px}
+@media(max-width:760px){main{gap:24px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">✦ ANIMA ✦ Faceless YouTube Channel</div>
+  <h1>Почему ты устаешь, даже когда ничего не делаешь</h1>
+  <div class="subtitle">День 1 · Утро &nbsp;|&nbsp; Продуктивность / Ментальное здоровье &nbsp;|&nbsp; 9:16 вертикальный формат</div>
+</header>
+
+<main>
+  <!-- Телефон -->
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="screen">
+        <div class="notch"></div>
+        <video id="vid" src="/anima_day1_morning.mp4" loop playsinline preload="metadata"></video>
+        <div class="play-overlay" id="overlay">
+          <div class="play-btn"></div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="btnPlay">▶ Смотреть</button>
+      <button class="btn" id="btnMute">🔊 Звук вкл.</button>
+      <button class="btn" id="btnRestart">⟲ Сначала</button>
+    </div>
+    <div class="dl" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+<button id="dlMp4" class="btn">⬇ Видео 1080×1920 MP4</button>
+<a class="btn" href="/ANIMA_Day1_WATCH_and_DOWNLOAD.html">⬇ HTML «смотреть+скачать»</a>
+<a class="btn" href="/ANIMA_Day1_production_bundle.zip" download>📦 Весь пакет (ZIP)</a>
+<a class="btn" href="/ANIMA_WORKSPACE_full.zip" download>🗂️ ВЕСЬ WORKSPACE (ZIP, 59 МБ)</a></div>
+  </div>
+
+  <!-- Панель -->
+  <div class="panel">
+    <div class="card">
+      <h2>О видео</h2>
+      <blockquote>«Ты не ленивый. Твой внутренний компас просто сломан. Каждая незавершенная задача — открытая вкладка в мозге… Выпиши всё — и твой мозг снова твой.»</blockquote>
+      <div class="meta-grid" style="margin-top:14px">
+        <div class="meta"><b>48 сек</b><span>хронометраж</span></div>
+        <div class="meta"><b>1080×1920</b><span>разрешение 9:16</span></div>
+        <div class="meta"><b>30 fps</b><span>H.264 + AAC</span></div>
+        <div class="meta"><b>∞ Loop</b><span>бесшовная петля</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Таймлайн · клик = перемотка</h2>
+      <div class="tl-track" id="track"><div class="tl-head" id="head"></div></div>
+      <div class="tl-labels"><span>0:00</span><span>0:12</span><span>0:24</span><span>0:36</span><span>0:48</span></div>
+      <div class="chapters" id="chapters"></div>
+    </div>
+
+    <div class="card">
+      <h2>Звуковой дизайн</h2>
+      <div class="sfx-list">
+        <span class="tag">🎵 Dark ambient → мажор</span><span class="tag">🧭 Тики компаса</span>
+        <span class="tag">🦋 Трепетание мотыльков</span><span class="tag">🌫️ Шёпот</span>
+        <span class="tag">💎 Хрустальный треск</span><span class="tag">📟 Digital glitch</span>
+        <span class="tag">✍️ ASMR письмо</span><span class="tag">🔔 Crystal chimes</span>
+        <span class="tag">🌸 Blooming sound</span><span class="tag">✨ Magical chime финал</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Производственный пакет</h2>
+      <div class="chapters">
+        <div class="chap" onclick="location='/01_image_prompts.md'">🎨 7 промтов Midjourney / Leonardo<span class="t">MD</span></div>
+        <div class="chap" onclick="location='/02_voiceover_script.md'">🎙️ Скрипт озвучки ElevenLabs<span class="t">MD</span></div>
+        <div class="chap" onclick="location='/03_video_timeline.md'">🎞️ Детальная раскадровка<span class="t">MD</span></div>
+        <div class="chap" onclick="location='/04_sound_design.md'">🔊 Полный саунд-дизайн<span class="t">MD</span></div>
+        <div class="chap" onclick="location='/subtitles_day1_morning.ru.srt'">💬 Субтитры для YouTube<span class="t">SRT</span></div>
+        <div class="chap" onclick="location='/preview_grid.png'">🖼️ Превью-сетка кадров<span class="t">PNG</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  МИР «АНИМА» — Стеклянный Лес · Цветы-Фонари · Наблюдатель
+  <br><span class="loop-badge">↻ конец плавно перетекает в начало — смотрите по кругу</span>
+</footer>
+
+<script>
+const vid=document.getElementById('vid'),overlay=document.getElementById('overlay'),
+ head=document.getElementById('head'),track=document.getElementById('track');
+
+// светлячки
+for(let i=0;i<26;i++){const f=document.createElement('div');f.className='firefly';
+ const s=2+Math.random()*4;f.style.width=f.style.height=s+'px';
+ f.style.left=Math.random()*100+'vw';f.style.animationDuration=(9+Math.random()*14)+'s';
+ f.style.animationDelay=(-Math.random()*20)+'s';document.body.appendChild(f);}
+
+// главы
+const chapters=[
+ {t:0,c:'#8f7ac0',n:'Блок 1 · Визуальный хук — сломанный компас'},
+ {t:4,c:'#b07ad0',n:'Кадр 2.1 · Мотыльки вылетают из головы'},
+ {t:11,c:'#7a90d0',n:'Кадр 2.2 · Люмены тускнеют'},
+ {t:19,c:'#d05a8a',n:'Кадр 2.3 · Вкладки мозга + глитч'},
+ {t:26,c:'#3fae8a',n:'Кадр 3.1 · Блокнот — мотыльки исчезают'},
+ {t:33,c:'#f0c98a',n:'Кадр 3.2 · Расцвет · золотые частицы'},
+ {t:41,c:'#ffd9a0',n:'Кадр 3.3 · CTA «Сохрани»'},
+ {t:45,c:'#8f7ac0',n:'Блок 4 · LOOP — возврат к компасу'}];
+const cw=document.getElementById('chapters');
+chapters.forEach((ch,i)=>{const d=document.createElement('div');d.className='chap';d.dataset.i=i;
+ d.innerHTML=`<span class="dot" style="background:${ch.c};box-shadow:0 0 8px ${ch.c}"></span>${ch.n}<span class="t">${fmt(ch.t)}</span>`;
+ d.onclick=()=>{vid.currentTime=ch.t;play();};cw.appendChild(d);});
+
+function fmt(s){return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');}
+function play(){vid.muted=mutedState;vid.play();overlay.classList.add('hidden');}
+let mutedState=true;
+overlay.onclick=play;
+document.getElementById('btnPlay').onclick=()=>vid.paused?play():vid.pause();
+vid.onpause=()=>overlay.classList.remove('hidden');
+vid.onplay=()=>overlay.classList.add('hidden');
+const bm=document.getElementById('btnMute');
+bm.onclick=()=>{mutedState=!mutedState;vid.muted=mutedState;bm.textContent=mutedState?'🔇 Звук выкл.':'🔊 Звук вкл.';};
+document.getElementById('btnRestart').onclick=()=>{vid.currentTime=0;play();};
+track.onclick=e=>{if(!vid.duration)return;vid.currentTime=(e.offsetLeft/track.offsetWidth)*vid.duration;play();};
+vid.ontimeupdate=()=>{ if(!vid.duration)return;
+ head.style.left=(vid.currentTime/vid.duration*100)+'%';
+ const cur=vid.currentTime; let act=-1;
+ chapters.forEach((ch,i)=>{if(cur>=ch.t)act=i;});
+ document.querySelectorAll('.chap[data-i]').forEach(el=>el.classList.toggle('active',+el.dataset.i===act));};
+</script>
+<script>
+document.getElementById('dlMp4').onclick=async()=>{
+  const r=await fetch('/anima_day1_morning.mp4'); if(!r.ok){alert('Файл не найден на сервере'); return;}
+  const b=await r.blob(); const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='anima_day1_morning.mp4'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};</script></body>
+</html>
